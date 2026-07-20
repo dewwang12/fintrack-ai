@@ -40,6 +40,15 @@ app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 // 4. Parse incoming cookies (vital for reading Refresh Token)
 app.use(cookieParser());
 
+// Health check endpoints for cloud monitoring (Render / Railway)
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'FinTrack AI API is live' });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'healthy', timestamp: new Date().toISOString() });
+});
+
 // 5. Mount API version 1 gateway
 app.use('/api/v1', routes);
 
