@@ -46,6 +46,9 @@ export const AuthProvider = ({ children }) => {
       setAuth({ user, accessToken });
       return user;
     } catch (error) {
+      if (!error.response) {
+        throw 'Network Error: Cannot connect to the backend server. Please check VITE_API_URL and ensure your backend server is running.';
+      }
       throw error?.response?.data?.message || 'Login failed';
     }
   };
@@ -56,6 +59,9 @@ export const AuthProvider = ({ children }) => {
       const response = await api.post('/auth/register', { name, email, password });
       return response.data.data.user;
     } catch (error) {
+      if (!error.response) {
+        throw 'Network Error: Cannot connect to the backend server. Please check VITE_API_URL and ensure your backend server is running.';
+      }
       throw error?.response?.data?.details || error?.response?.data?.message || 'Registration failed';
     }
   };

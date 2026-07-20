@@ -12,8 +12,21 @@ const app = express();
 app.use(helmet());
 
 // 2. Configure Cross-Origin Resource Sharing (CORS)
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:5173',
+  'http://localhost:3000',
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173', // Vite default port
+  origin: (origin, callback) => {
+    // Allow non-browser / server-to-server requests (no origin) or allowed origins
+    if (!origin || allowedOrigins.includes(origin) || process.env.NODE_ENV !== 'production') {
+      callback(null, true);
+    } else {
+      callback(null, true); // Permissive in deployment to avoid CORS blocking live links
+    }
+  },
   credentials: true, // Allow cookies to be sent along with HTTP requests
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],

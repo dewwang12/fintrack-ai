@@ -6,7 +6,7 @@ const AppError = require('../utils/AppError');
 const cookieOptions = {
   httpOnly: true, // Prevents XSS script read access
   secure: process.env.NODE_ENV === 'production', // Sent only over HTTPS in production
-  sameSite: 'strict', // Prevents CSRF attacks
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' required for cross-domain deployment (e.g. Vercel + Render)
   maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days matching token expiration
 };
 
@@ -70,7 +70,7 @@ const logout = asyncHandler(async (req, res, next) => {
   res.clearCookie('refreshToken', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
   });
 
   res.status(200).json({
